@@ -1,0 +1,70 @@
+resources: &resources
+  limits:
+    cpu: 100m
+    memory: 128Mi
+  requests:
+    cpu: 50m
+    memory: 64Mi
+
+clusterOperator:
+  resources:
+    <<: *resources
+
+msgTopologyOperator:
+  resources:
+    <<: *resources
+
+useCertManager: true
+
+extraDeploy:
+- apiVersion: rabbitmq.com/v1beta1
+  kind: RabbitmqCluster
+  metadata:
+    name: &cluster_name rabbitmq
+    namespace: &cluster_namespace default
+  spec:
+    replicas: 1
+    persistence:
+      storage: 1Gi
+      storageClassName: standard
+    resources:
+      limits:
+        cpu: 200m
+        memory: 1Gi
+      requests:
+        cpu: 200m
+        memory: 1Gi
+- apiVersion: rabbitmq.com/v1beta1
+  kind: User
+  metadata:
+    name: &cluster_username demo
+    namespace: *cluster_namespace
+  spec:
+    tags: ["administrator"]
+    rabbitmqClusterReference:
+      name: *cluster_name
+    importCredentialsSecret:
+      name: rabbitmq-user
+- apiVersion: rabbitmq.com/v1beta1
+  kind: Permission
+  metadata:
+    name: *cluster_username
+    namespace: *cluster_namespace
+  spec:
+    vhost: "/"
+    permissions:
+      configure: ".*"
+      write: ".*"
+      read: ".*"
+    userReference:
+      name: *cluster_username
+    rabbitmqClusterReference:
+      name: *cluster_name
+- apiVersion: v1
+  kind: Secret
+  metadata:
+    name: rabbitmq-user
+    namespace: *cluster_namespace
+  stringData:
+    username: *cluster_username
+    password: *cluster_username

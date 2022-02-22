@@ -1,0 +1,32 @@
+installCRDs: true
+
+resources: &resources
+  limits:
+    cpu: 100m
+    memory: 128Mi
+  requests:
+    cpu: 50m
+    memory: 64Mi
+
+containerSecurityContext: &containerSecurityContext
+  runAsNonRoot: true
+  readOnlyRootFilesystem: true
+  capabilities:
+    drop: ["ALL"]
+
+webhook:
+  enabled: true
+  resources:
+    <<: *resources
+  containerSecurityContext:
+    <<: *containerSecurityContext
+
+cainjector:
+  enabled: true
+  resources:
+    <<: *resources
+  containerSecurityContext:
+    <<: *containerSecurityContext
+
+prometheus:
+  enabled: false
