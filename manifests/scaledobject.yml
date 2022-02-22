@@ -8,7 +8,7 @@ spec:
     kind: Deployment
     name: whoami
   pollingInterval: 10
-  minReplicaCount: 0
+  minReplicaCount: 1
   maxReplicaCount: 10
   advanced:
     horizontalPodAutoscalerConfig:

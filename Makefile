@@ -1,14 +1,16 @@
 MINIKUBE_PROFILE := minikube
 MINIKUBE_DRIVER := kvm2    # https://minikube.sigs.k8s.io/docs/drivers/
 MINIKUBE_NODES := 1
-MINIKUBE_CPUS := 2
-MINIKUBE_MEMORY := 4096
+MINIKUBE_CPUS := 4
+MINIKUBE_MEMORY := 8196
 
 KUBERNETES_VERSION := 1.20.12
 KUBERNETES_API_PORT := 8443
 
 
 up: minikube-start ingress-nginx-install cert-manager-install rabbitmq-operator-install keda-install
+
+down: minikube-stop
 
 destroy: minikube-delete
 
@@ -22,7 +24,10 @@ minikube-start:
 		--driver ${MINIKUBE_DRIVER} \
 		--apiserver-port ${KUBERNETES_API_PORT} \
 		--kubernetes-version ${KUBERNETES_VERSION} \
-		--addons metrics-server,ingress
+		--addons metrics-server
+
+minikube-stop:
+	minikube stop --profile ${MINIKUBE_PROFILE}
 
 minikube-delete:
 	minikube delete --profile ${MINIKUBE_PROFILE}
@@ -78,17 +83,14 @@ rabbitmq-operator-install:
 
 
 rabbitmq-port-forward:
-	kubectl port-forward ${RABBITMQ_HOST}-server-0 5672:5672 15672:15672
-
-service-url:
-	minikube service ingress-nginx-controller --url --namespace ingress-nginx
+	kubectl port-forward rabbitmq-server-0 5672:5672 15672:15672
 
 
 define buneary
 	docker run \
 		--rm \
 		--network host \
-		rantanevich/buneary:v0.3.1 \
+		dominikbraun/buneary:v0.3.1 \
 			--user demo \
 			--password demo \
 			${1} localhost ${2} ${3}
@@ -122,3 +124,10 @@ endif
 
 get:
 	$(call buneary, get messages, demo_queue, --force --max=$(RUN_ARGS))
+
+
+app-deploy:
+	kubectl apply --namespace default --filename ./manifests
+
+app-url:
+	minikube service ingress-nginx-controller --url --namespace ingress-nginx
