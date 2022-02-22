@@ -116,4 +116,6 @@ make get 45
 - [Scaling of Deployments and StatefulSets](https://keda.sh/docs/2.6/concepts/scaling-deployments)
 - [Scalers](https://keda.sh/docs/2.6/scalers)
 - [RabbitMQ Queue](https://keda.sh/docs/2.6/scalers/rabbitmq-queue)
-- [How KEDA with HPA](https://github.com/kedacore/keda/blob/main/CREATE-NEW-SCALER.md#getmetricspecforscaling)
+- [How KEDA works with HPA](https://github.com/kedacore/keda/blob/main/CREATE-NEW-SCALER.md#getmetricspecforscaling)
+- [Scaling policies](https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/#scaling-policies)
+- [Stabilization window](https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/#stabilization-window)
